@@ -18,6 +18,8 @@ export default function GraphsPage() {
     { name: "Rotting Oranges",             diff: "Medium", tags: ["multi-source BFS"],            href: "https://leetcode.com/problems/rotting-oranges/" },
     { name: "Word Ladder",                 diff: "Hard",   tags: ["BFS", "shortest path"],        href: "https://leetcode.com/problems/word-ladder/" },
     { name: "Alien Dictionary",            diff: "Hard",   tags: ["topological sort", "premium"], href: "https://leetcode.com/problems/alien-dictionary/" },
+    { name: "Network Delay Time",          diff: "Medium", tags: ["dijkstra", "weighted"],        href: "https://leetcode.com/problems/network-delay-time/" },
+    { name: "Cheapest Flights Within K Stops", diff: "Medium", tags: ["bellman-ford", "weighted"], href: "https://leetcode.com/problems/cheapest-flights-within-k-stops/" },
   ]
 
   const bfsCode = `<span class="kw">function</span> <span class="fn">bfs</span>(graph: number[][], start: number, target: number): number {
@@ -54,6 +56,22 @@ export default function GraphsPage() {
   <span class="kw">return</span> order.length === n ? order : [];
 }`
 
+  const dijkstraCode = `<span class="kw">function</span> <span class="fn">dijkstra</span>(graph: [number, number][][], src: number, n: number): number[] {
+  <span class="kw">const</span> dist = <span class="kw">new</span> Array(n).fill(Infinity);
+  dist[src] = <span class="num">0</span>;
+  <span class="kw">const</span> heap: [number, number][] = [[<span class="num">0</span>, src]]; <span class="cm">// [distance, node]</span>
+  <span class="cm">// ...siftUp/siftDown/push/pop omitted, see Heap / Priority Queue topic</span>
+  <span class="kw">while</span> (heap.length) {
+    <span class="kw">const</span> [d, node] = pop(heap);
+    <span class="kw">if</span> (d &gt; dist[node]) <span class="kw">continue</span>; <span class="cm">// stale — a shorter path already won</span>
+    <span class="kw">for</span> (<span class="kw">const</span> [nei, w] <span class="kw">of</span> graph[node]) {
+      <span class="kw">const</span> nd = d + w;
+      <span class="kw">if</span> (nd &lt; dist[nei]) { dist[nei] = nd; push(heap, [nd, nei]); }
+    }
+  }
+  <span class="kw">return</span> dist;
+}`
+
   return (
     <div>
       <div className="page-eyebrow">Non-Linear</div>
@@ -79,10 +97,12 @@ export default function GraphsPage() {
                 ["DFS",                "O(V + E)",      "O(V)"],
                 ["Topological Sort",   "O(V + E)",      "O(V)"],
                 ["Union Find",         "O(α(n)) ≈ O(1)","O(n)"],
+                ["Dijkstra (heap)",    "O((V+E) log V)","O(V)"],
+                ["Bellman-Ford",       "O(V · E)",      "O(V)"],
               ].map(([a, t, s]) => (
                 <tr key={a}>
                   <td className="op">{a}</td>
-                  <td className="time-good">{t}</td>
+                  <td className={t === "O(V · E)" ? "time-ok" : "time-good"}>{t}</td>
                   <td style={{ color: "var(--muted)" }}>{s}</td>
                 </tr>
               ))}
@@ -99,6 +119,8 @@ export default function GraphsPage() {
               ["Multi-source BFS",    "Start BFS from ALL sources simultaneously. Rotting oranges, walls & gates."],
               ["Topological Sort",    "Kahn's algo: nodes with in-degree 0 have no unprocessed dependency, so they're safe to output first — removing them lowers neighbors' in-degree. A cycle's nodes never reach in-degree 0, so order.length < n is the only signature a cycle leaves behind."],
               ["Union Find",          "find() flattens the path to the root as it walks up (path compression); union by size/rank always attaches the smaller tree under the bigger one's root so trees stay shallow. Together: O(α(n)) ≈ O(1) amortized merge/find."],
+              ["Dijkstra's",          "Weighted shortest path, non-negative weights only. Pop the closest unvisited node from a min-heap, relax its neighbors, repeat — greedy because once popped, no later (longer) path can beat the one already found."],
+              ["Bellman-Ford",        "Weighted shortest path that tolerates negative weights (not negative cycles). Relax every edge V-1 times; a K-stop limit just caps the relaxation rounds at K+1 instead of running to convergence."],
             ].map(([name, desc]) => (
               <div key={name} className="pattern-chip">
                 <div className="pattern-chip-name">{name}</div>
@@ -120,6 +142,16 @@ export default function GraphsPage() {
             <div style={{ fontSize: 11, fontFamily: "var(--font-mono)", color: "var(--muted)", marginBottom: 6 }}>Topological Sort (Kahn&apos;s)</div>
             <CodeBlock html={topoCode} style={{ fontSize: 11 }} />
           </div>
+        </div>
+      </div>
+
+      <div className="card">
+        <div className="card-title">Template — Dijkstra&apos;s (weighted shortest path)</div>
+        <CodeBlock html={dijkstraCode} />
+        <div style={{ marginTop: 10, fontSize: 11, color: "var(--muted)", fontFamily: "var(--font-mono)", lineHeight: 1.6 }}>
+          Same shape as the heap templates on the Heap / Priority Queue page — this is that
+          min-heap used to always expand the currently-closest unvisited node next, which is what
+          makes it greedy-correct as long as no edge weight is negative.
         </div>
       </div>
 
@@ -151,6 +183,16 @@ export default function GraphsPage() {
               queue starts <strong>empty</strong> and order never grows past []. order.length
               (0) !== n (3) → returns [] immediately. The cycle didn&apos;t need a separate check;
               it just never produced any in-degree-0 node to begin with.
+            </div>
+          </div>
+          <div className="problem-row" style={{ flexDirection: "column", alignItems: "flex-start", gap: 3 }}>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700, color: "#c4b5fd" }}>Dijkstra — Network Delay Time, edges 2→1(1), 2→3(1), 3→4(1), start=2</div>
+            <div style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.6 }}>
+              dist[2]=0, heap=[(0,2)]. Pop (0,2): relax 1 (dist[1]=1) and 3 (dist[3]=1), push both
+              → heap=[(1,1),(1,3)]. Pop (1,1): node 1 has no outgoing edges, nothing relaxes. Pop
+              (1,3): relax 4 (dist[4]=1+1=2), push it → heap=[(2,4)]. Pop (2,4): no outgoing edges.
+              Heap empty, done. dist=[1,0,1,2] for nodes [1,2,3,4] — the answer is the max of
+              those, 2 (how long until the <em>last</em> node hears the signal).
             </div>
           </div>
         </div>

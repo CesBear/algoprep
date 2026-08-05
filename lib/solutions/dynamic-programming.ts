@@ -176,6 +176,31 @@ const solutions: Record<string, string> = {
   }
   return dp[0][n - 1];
 }`,
+
+  "Jump Game II": `function jump(nums: number[]): number {
+  let jumps = 0, curEnd = 0, farthest = 0;
+  for (let i = 0; i < nums.length - 1; i++) {
+    farthest = Math.max(farthest, i + nums[i]);
+    if (i === curEnd) {       // exhausted every index reachable by the current jump count
+      jumps++;
+      curEnd = farthest;      // commit to the best jump seen while covering this range
+    }
+  }
+  return jumps;
+}`,
+
+  "Gas Station": `function canCompleteCircuit(gas: number[], cost: number[]): number {
+  let total = 0, tank = 0, start = 0;
+  for (let i = 0; i < gas.length; i++) {
+    const diff = gas[i] - cost[i];
+    total += diff;
+    tank += diff;
+    // tank going negative at i means no station from the current start
+    // through i can reach i+1 either — they're all disqualified together
+    if (tank < 0) { start = i + 1; tank = 0; }
+  }
+  return total < 0 ? -1 : start;
+}`,
 };
 
 export default solutions;

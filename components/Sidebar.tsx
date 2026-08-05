@@ -27,12 +27,15 @@ const NAV = [
       { href: "/two-pointers",   label: "Two Pointers",   icon: "⇔" },
       { href: "/sliding-window", label: "Sliding Window", icon: "▦" },
       { href: "/binary-search",  label: "Binary Search",  icon: "½" },
+      { href: "/bit-manipulation", label: "Bit Manipulation", icon: "⊕" },
     ],
   },
   {
     group: "Non-Linear",
     items: [
       { href: "/trees",  label: "Trees",  icon: "🌲" },
+      { href: "/heaps",  label: "Heap / Priority Queue", icon: "▲" },
+      { href: "/tries",  label: "Trie / Prefix Tree", icon: "⊤" },
       { href: "/graphs", label: "Graphs", icon: "◎" },
     ],
   },
@@ -78,7 +81,7 @@ export default function Sidebar() {
       ))}
 
       <div style={{ marginTop: "auto", padding: "12px 16px", borderTop: "1px solid var(--border)", fontSize: 10, fontFamily: "var(--font-mono)", color: "var(--muted)" }}>
-        15 topics · DSA for SDETs
+        18 topics · DSA for SDETs
       </div>
     </nav>
   )

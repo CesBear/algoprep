@@ -144,6 +144,41 @@ const solutions: Record<string, string> = {
   mergeSort(indices);
   return res;
 }`,
+
+  "Insert Interval": `function insert(intervals: number[][], newInterval: number[]): number[][] {
+  const res: number[][] = [];
+  let i = 0, n = intervals.length;
+  let [start, end] = newInterval;
+
+  while (i < n && intervals[i][1] < start) res.push(intervals[i++]); // entirely before
+  while (i < n && intervals[i][0] <= end) {                          // overlaps — merge in
+    start = Math.min(start, intervals[i][0]);
+    end = Math.max(end, intervals[i][1]);
+    i++;
+  }
+  res.push([start, end]);
+  while (i < n) res.push(intervals[i++]);                            // entirely after
+  return res;
+}`,
+
+  "Non-overlapping Intervals": `function eraseOverlapIntervals(intervals: number[][]): number {
+  if (!intervals.length) return 0;
+  intervals.sort((a, b) => a[1] - b[1]); // sort by END, not start — greedy interval scheduling
+  let count = 0, prevEnd = intervals[0][1];
+  for (let i = 1; i < intervals.length; i++) {
+    if (intervals[i][0] < prevEnd) count++;        // overlaps prevEnd — remove this one
+    else prevEnd = intervals[i][1];                 // keeps it, advance the boundary
+  }
+  return count;
+}`,
+
+  "Meeting Rooms": `function canAttendMeetings(intervals: number[][]): boolean {
+  intervals.sort((a, b) => a[0] - b[0]);
+  for (let i = 1; i < intervals.length; i++) {
+    if (intervals[i][0] < intervals[i - 1][1]) return false; // starts before the previous ends
+  }
+  return true;
+}`,
 };
 
 export default solutions;

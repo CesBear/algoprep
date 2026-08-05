@@ -7,6 +7,9 @@ export default function SortingPage() {
     { name: "Sort Colors (Dutch Flag)",         diff: "Medium", tags: ["3-way partition"],      href: "https://leetcode.com/problems/sort-colors/" },
     { name: "Merge Intervals",                  diff: "Medium", tags: ["sort", "greedy"],       href: "https://leetcode.com/problems/merge-intervals/" },
     { name: "Meeting Rooms II",                 diff: "Medium", tags: ["sort", "heap"],         href: "https://leetcode.com/problems/meeting-rooms-ii/" },
+    { name: "Insert Interval",                  diff: "Medium", tags: ["intervals"],            href: "https://leetcode.com/problems/insert-interval/" },
+    { name: "Non-overlapping Intervals",        diff: "Medium", tags: ["intervals", "greedy"],  href: "https://leetcode.com/problems/non-overlapping-intervals/" },
+    { name: "Meeting Rooms",                    diff: "Easy",   tags: ["intervals", "premium"], href: "https://leetcode.com/problems/meeting-rooms/" },
     { name: "Largest Number",                   diff: "Medium", tags: ["custom comparator"],    href: "https://leetcode.com/problems/largest-number/" },
     { name: "Kth Largest Element",              diff: "Medium", tags: ["quickselect", "heap"],  href: "https://leetcode.com/problems/kth-largest-element-in-an-array/" },
     { name: "Top K Frequent Elements",          diff: "Medium", tags: ["heap", "bucket sort"],  href: "https://leetcode.com/problems/top-k-frequent-elements/" },
@@ -112,6 +115,7 @@ export default function SortingPage() {
             ["Custom Comparator",  ".sort(...) with a comparator key instead of hand-rolling an algorithm — Largest Number's string-concat order, sorting intervals by start time."],
             ["Non-Comparison Sort","Counting/bucket/radix skip comparisons entirely, beating the O(n log n) floor — but only work when keys are small integers or can be bucketed, like Top K Frequent's bucket-by-frequency below."],
             ["Quickselect (partial sort)", "Only the side of the partition containing k ever recurses — the other side is abandoned unsorted. That's why finding one order statistic averages O(n), not O(n log n)."],
+            ["Intervals — sort by start", "Sort intervals by start time, then sweep once comparing each to the running boundary (last merged end, or last kept end). The sort is what turns an O(n²) all-pairs overlap check into a single O(n) pass."],
           ].map(([name, desc]) => (
             <div key={name} className="pattern-chip">
               <div className="pattern-chip-name">{name}</div>
@@ -155,6 +159,17 @@ export default function SortingPage() {
               and everything &gt;4 to its right ([9,7]) — that partition invariant is what lets
               quickselect throw away the side that can&apos;t contain the kth element instead of
               recursing into both.
+            </div>
+          </div>
+          <div className="problem-row" style={{ flexDirection: "column", alignItems: "flex-start", gap: 3 }}>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700, color: "#c4b5fd" }}>Non-overlapping Intervals — greedy by end, [1,2],[2,3],[3,4],[1,3]</div>
+            <div style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.6 }}>
+              Sort by end time: [1,2](end 2), [2,3](end 3), [1,3](end 3), [3,4](end 4). prevEnd=2.
+              [2,3]: start 2 &lt; prevEnd 2? No → keep it, prevEnd=3. [1,3]: start 1 &lt; prevEnd 3?
+              Yes, overlaps → remove it, count=1, prevEnd unchanged. [3,4]: start 3 &lt; prevEnd 3?
+              No → keep it, prevEnd=4. Answer: 1 removal. Sorting by <em>end</em> (not start) is
+              what makes this greedy — always keeping the interval that frees up the boundary
+              earliest leaves the most room for everything still to come.
             </div>
           </div>
         </div>

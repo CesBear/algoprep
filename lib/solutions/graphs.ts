@@ -264,6 +264,73 @@ const solutions: Record<string, string> = {
   }
   return 0;
 }`,
+
+  "Network Delay Time": `function networkDelayTime(times: number[][], n: number, k: number): number {
+  const graph: [number, number][][] = Array.from({ length: n + 1 }, () => []);
+  for (const [u, v, w] of times) graph[u].push([v, w]);
+
+  const dist = new Array(n + 1).fill(Infinity);
+  dist[k] = 0;
+  const heap: [number, number][] = [[0, k]]; // [distance, node]
+  const less = (a: [number, number], b: [number, number]) => a[0] < b[0];
+
+  function siftUp(i: number) {
+    while (i > 0) {
+      const p = (i - 1) >> 1;
+      if (!less(heap[i], heap[p])) break;
+      [heap[i], heap[p]] = [heap[p], heap[i]];
+      i = p;
+    }
+  }
+  function siftDown(i: number) {
+    const size = heap.length;
+    while (true) {
+      let top = i;
+      const l = 2 * i + 1, r = 2 * i + 2;
+      if (l < size && less(heap[l], heap[top])) top = l;
+      if (r < size && less(heap[r], heap[top])) top = r;
+      if (top === i) break;
+      [heap[i], heap[top]] = [heap[top], heap[i]];
+      i = top;
+    }
+  }
+  function push(e: [number, number]) { heap.push(e); siftUp(heap.length - 1); }
+  function pop(): [number, number] {
+    const top = heap[0];
+    const last = heap.pop()!;
+    if (heap.length) { heap[0] = last; siftDown(0); }
+    return top;
+  }
+
+  while (heap.length) {
+    const [d, node] = pop();
+    if (d > dist[node]) continue; // stale entry — a shorter path to node already won
+    for (const [nei, w] of graph[node]) {
+      const nd = d + w;
+      if (nd < dist[nei]) { dist[nei] = nd; push([nd, nei]); }
+    }
+  }
+
+  const maxDist = Math.max(...dist.slice(1));
+  return maxDist === Infinity ? -1 : maxDist;
+}`,
+
+  "Cheapest Flights Within K Stops": `function findCheapestPrice(n: number, flights: number[][], src: number, dst: number, k: number): number {
+  let dist = new Array(n).fill(Infinity);
+  dist[src] = 0;
+
+  // relax exactly k+1 times (k stops = k+1 edges); reading only from last
+  // round's dist (not this round's) caps every path to i+1 edges per round
+  for (let i = 0; i <= k; i++) {
+    const next = [...dist];
+    for (const [u, v, w] of flights) {
+      if (dist[u] !== Infinity && dist[u] + w < next[v]) next[v] = dist[u] + w;
+    }
+    dist = next;
+  }
+
+  return dist[dst] === Infinity ? -1 : dist[dst];
+}`,
 };
 
 export default solutions;

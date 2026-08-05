@@ -107,22 +107,59 @@ const solutions: Record<string, string> = {
   return slow;
 }`,
 
-  "LRU Cache": `class LRUCache {
-  private cap: number;
-  private map = new Map<number, number>();
-  constructor(capacity: number) { this.cap = capacity; }
-  // Map preserves insertion order; delete+set moves a key to the
-  // most-recently-used end without needing a manual doubly-linked list
-  get(key: number): number {
-    if (!this.map.has(key)) return -1;
-    const val = this.map.get(key)!;
-    this.map.delete(key); this.map.set(key, val);
-    return val;
+  "LRU Cache": `class DListNode {
+  key: number; val: number;
+  prev: DListNode | null = null;
+  next: DListNode | null = null;
+  constructor(key: number, val: number) { this.key = key; this.val = val; }
+}
+
+class LRUCache {
+  private map = new Map<number, DListNode>();
+  private head = new DListNode(0, 0); // sentinel — head.next is most-recently-used
+  private tail = new DListNode(0, 0); // sentinel — tail.prev is least-recently-used
+
+  constructor(private cap: number) {
+    this.head.next = this.tail;
+    this.tail.prev = this.head;
   }
+
+  get(key: number): number {
+    const node = this.map.get(key);
+    if (!node) return -1;
+    this.remove(node);
+    this.addFront(node);
+    return node.val;
+  }
+
   put(key: number, value: number): void {
-    if (this.map.has(key)) this.map.delete(key);
-    this.map.set(key, value);
-    if (this.map.size > this.cap) this.map.delete(this.map.keys().next().value!);
+    const existing = this.map.get(key);
+    if (existing) {
+      existing.val = value;
+      this.remove(existing);
+      this.addFront(existing);
+      return;
+    }
+    if (this.map.size >= this.cap) {
+      const lru = this.tail.prev!;
+      this.remove(lru);
+      this.map.delete(lru.key);
+    }
+    const node = new DListNode(key, value);
+    this.map.set(key, node);
+    this.addFront(node);
+  }
+
+  private remove(node: DListNode): void {
+    node.prev!.next = node.next;
+    node.next!.prev = node.prev;
+  }
+
+  private addFront(node: DListNode): void {
+    node.next = this.head.next;
+    node.prev = this.head;
+    this.head.next!.prev = node;
+    this.head.next = node;
   }
 }`,
 

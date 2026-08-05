@@ -145,6 +145,56 @@ const solutions: Record<string, string> = {
     }
   }
 }`,
+
+  "Rotate Image": `function rotate(matrix: number[][]): void {
+  const n = matrix.length;
+  for (let i = 0; i < n; i++)
+    for (let j = i + 1; j < n; j++)
+      [matrix[i][j], matrix[j][i]] = [matrix[j][i], matrix[i][j]]; // transpose
+
+  for (const row of matrix) row.reverse(); // mirror each row left-right
+}`,
+
+  "Spiral Matrix": `function spiralOrder(matrix: number[][]): number[] {
+  const res: number[] = [];
+  let top = 0, bottom = matrix.length - 1, left = 0, right = matrix[0].length - 1;
+
+  while (top <= bottom && left <= right) {
+    for (let c = left; c <= right; c++) res.push(matrix[top][c]);
+    top++;
+    for (let r = top; r <= bottom; r++) res.push(matrix[r][right]);
+    right--;
+    if (top <= bottom) {
+      for (let c = right; c >= left; c--) res.push(matrix[bottom][c]);
+      bottom--;
+    }
+    if (left <= right) {
+      for (let r = bottom; r >= top; r--) res.push(matrix[r][left]);
+      left++;
+    }
+  }
+  return res;
+}`,
+
+  "Set Matrix Zeroes": `function setZeroes(matrix: number[][]): void {
+  const rows = matrix.length, cols = matrix[0].length;
+  let firstRowZero = false, firstColZero = false;
+
+  for (let c = 0; c < cols; c++) if (matrix[0][c] === 0) firstRowZero = true;
+  for (let r = 0; r < rows; r++) if (matrix[r][0] === 0) firstColZero = true;
+
+  // use row 0 / col 0 themselves as the O(1)-space marker for the rest of the grid
+  for (let r = 1; r < rows; r++)
+    for (let c = 1; c < cols; c++)
+      if (matrix[r][c] === 0) { matrix[r][0] = 0; matrix[0][c] = 0; }
+
+  for (let r = 1; r < rows; r++)
+    for (let c = 1; c < cols; c++)
+      if (matrix[r][0] === 0 || matrix[0][c] === 0) matrix[r][c] = 0;
+
+  if (firstRowZero) for (let c = 0; c < cols; c++) matrix[0][c] = 0;
+  if (firstColZero) for (let r = 0; r < rows; r++) matrix[r][0] = 0;
+}`,
 };
 
 export default solutions;

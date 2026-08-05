@@ -113,6 +113,58 @@ function decode(s: string): string[] {
     if (this.map.size > this.cap) this.map.delete(this.map.keys().next().value!);
   }
 }`,
+
+  "LFU Cache": `class LFUCache {
+  private minFreq = 0;
+  private keyToVal = new Map<number, number>();
+  private keyToFreq = new Map<number, number>();
+  // Set iteration order == insertion order in JS — front of the set at a
+  // given frequency is the least-recently-used key at that frequency
+  private freqToKeys = new Map<number, Set<number>>();
+
+  constructor(private cap: number) {}
+
+  get(key: number): number {
+    if (!this.keyToVal.has(key)) return -1;
+    this.touch(key);
+    return this.keyToVal.get(key)!;
+  }
+
+  put(key: number, value: number): void {
+    if (this.cap === 0) return;
+    if (this.keyToVal.has(key)) {
+      this.keyToVal.set(key, value);
+      this.touch(key);
+      return;
+    }
+    if (this.keyToVal.size >= this.cap) {
+      const evictSet = this.freqToKeys.get(this.minFreq)!;
+      const evictKey = evictSet.values().next().value!;
+      evictSet.delete(evictKey);
+      this.keyToVal.delete(evictKey);
+      this.keyToFreq.delete(evictKey);
+    }
+    this.keyToVal.set(key, value);
+    this.keyToFreq.set(key, 1);
+    if (!this.freqToKeys.has(1)) this.freqToKeys.set(1, new Set());
+    this.freqToKeys.get(1)!.add(key);
+    this.minFreq = 1;
+  }
+
+  private touch(key: number): void {
+    const freq = this.keyToFreq.get(key)!;
+    const bucket = this.freqToKeys.get(freq)!;
+    bucket.delete(key);
+    if (bucket.size === 0) {
+      this.freqToKeys.delete(freq);
+      if (this.minFreq === freq) this.minFreq++; // this bucket was the only one at minFreq
+    }
+    const nextFreq = freq + 1;
+    this.keyToFreq.set(key, nextFreq);
+    if (!this.freqToKeys.has(nextFreq)) this.freqToKeys.set(nextFreq, new Set());
+    this.freqToKeys.get(nextFreq)!.add(key);
+  }
+}`,
 };
 
 export default solutions;

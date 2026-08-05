@@ -16,6 +16,9 @@ export default function ArraysPage() {
     { name: "3Sum",                                 diff: "Medium", tags: ["two pointers", "sort"],    href: "https://leetcode.com/problems/3sum/" },
     { name: "Container With Most Water",            diff: "Medium", tags: ["two pointers"],            href: "https://leetcode.com/problems/container-with-most-water/" },
     { name: "Trapping Rain Water",                  diff: "Hard",   tags: ["two pointers"],            href: "https://leetcode.com/problems/trapping-rain-water/" },
+    { name: "Rotate Image",                         diff: "Medium", tags: ["matrix", "in-place"],      href: "https://leetcode.com/problems/rotate-image/" },
+    { name: "Spiral Matrix",                        diff: "Medium", tags: ["matrix"],                  href: "https://leetcode.com/problems/spiral-matrix/" },
+    { name: "Set Matrix Zeroes",                    diff: "Medium", tags: ["matrix", "in-place"],      href: "https://leetcode.com/problems/set-matrix-zeroes/" },
   ]
 
   const prefixSumCode = `<span class="kw">function</span> <span class="fn">prefixSum</span>(arr: number[]): number[] {
@@ -72,6 +75,7 @@ export default function ArraysPage() {
               ["Sliding Window","Fixed or variable window. O(n) for subarray problems."],
               ["Kadane's Algo", "At each index, either extend the running sum or restart here — a negative running sum never helps later, so drop it. Don't clamp to 0: if every number is negative, the answer is the least-negative single element."],
               ["Dutch Flag",    "3-way partition (0s, 1s, 2s) in one pass. See Sort Colors below."],
+              ["Matrix traversal", "Rotate 90° in-place: transpose (flip across the diagonal) then reverse each row — two O(n²) passes, no extra grid. Spiral: shrink four boundaries (top/bottom/left/right) inward after each edge. Set Zeroes: reuse row 0 / col 0 themselves as the O(1)-space marker instead of allocating a second grid."],
             ].map(([name, desc]) => (
               <div key={name} className="pattern-chip">
                 <div className="pattern-chip-name">{name}</div>
@@ -109,6 +113,16 @@ export default function ArraysPage() {
               nums=[-1,0,1,2,-1,-4]. Sort → [-4,-1,-1,0,1,2]. Fix i=1 (-1): lo=2,hi=5 → -1+(-1)+2=0, match [-1,-1,2];
               lo++ → lo=3,hi=4 → -1+0+1=0, match [-1,0,1]. i=2 is skipped entirely because nums[2]===nums[1]
               (both -1) — that&apos;s the dedup check earning its keep.
+            </div>
+          </div>
+          <div className="problem-row" style={{ flexDirection: "column", alignItems: "flex-start", gap: 3 }}>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700, color: "#c4b5fd" }}>Rotate Image — transpose then reverse, [[1,2],[3,4]]</div>
+            <div style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.6 }}>
+              Transpose swaps (0,1) with (1,0): [[1,2],[3,4]] → [[1,3],[2,4]] (rows and columns
+              swapped). Reverse each row: [1,3]→[3,1], [2,4]→[4,2]. Result [[3,1],[4,2]] — the
+              original bottom-left (3) is now top-left, matching a 90° clockwise turn. Transposing
+              alone would give a mirror across the diagonal, not a rotation — the row-reverse is
+              what turns that mirror into an actual rotation.
             </div>
           </div>
         </div>

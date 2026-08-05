@@ -18,6 +18,8 @@ export default function DPPage() {
     { name: "Unique Paths",                 diff: "Medium", tags: ["2D DP"],                   href: "https://leetcode.com/problems/unique-paths/" },
     { name: "Longest Increasing Subsequence",diff: "Medium",tags: ["1D DP", "binary search", "O(n log n)"], href: "https://leetcode.com/problems/longest-increasing-subsequence/" },
     { name: "Jump Game",                    diff: "Medium", tags: ["greedy / DP"],              href: "https://leetcode.com/problems/jump-game/" },
+    { name: "Jump Game II",                 diff: "Medium", tags: ["greedy"],                  href: "https://leetcode.com/problems/jump-game-ii/" },
+    { name: "Gas Station",                  diff: "Medium", tags: ["greedy"],                  href: "https://leetcode.com/problems/gas-station/" },
     { name: "Partition Equal Subset Sum",   diff: "Medium", tags: ["0/1 knapsack"],             href: "https://leetcode.com/problems/partition-equal-subset-sum/" },
     { name: "Edit Distance",                diff: "Hard",   tags: ["2D DP"],                   href: "https://leetcode.com/problems/edit-distance/" },
     { name: "Burst Balloons",               diff: "Hard",   tags: ["interval DP"],             href: "https://leetcode.com/problems/burst-balloons/" },
@@ -93,6 +95,7 @@ export default function DPPage() {
               ["0/1 Knapsack",        "For each item: skip it (carry forward the row above) or take it (add its value, spend its weight from a smaller subproblem). Try both, keep the max — each item used at most once."],
               ["Unbounded Knapsack",  "Same item can be used many times. Coin change, combination sum."],
               ["Interval DP",         "The subproblem is a contiguous range; try every position as the 'last thing that happens' in that range (last balloon burst, last matrix multiplied) — whatever's on each side was already solved independently."],
+              ["Greedy",              "Make the locally-best choice and never revisit it — no table, no subproblem cache. Only valid when an exchange argument holds: swapping in the greedy choice never makes the final answer worse. See Common Traps for exactly where this breaks."],
             ].map(([name, desc]) => (
               <div key={name} className="pattern-chip">
                 <div className="pattern-chip-name">{name}</div>
@@ -165,6 +168,18 @@ export default function DPPage() {
               — once row i is computed, row i-2 is dead. That&apos;s why this 2D table can be
               collapsed to two 1D arrays (or even one, updated carefully): O(m·n) time stays the
               same, but space drops from O(m·n) to O(n).
+            </div>
+          </div>
+          <div className="problem-row" style={{ flexDirection: "column", alignItems: "flex-start", gap: 3 }}>
+            <div style={{ fontFamily: "var(--font-mono)", fontSize: 11, fontWeight: 700, color: "#c4b5fd" }}>Gas Station — greedy restart, gas=[1,2,3,4,5], cost=[3,4,5,1,2]</div>
+            <div style={{ fontSize: 12, color: "var(--muted)", lineHeight: 1.6 }}>
+              i=0: diff=1-3=-2, tank=-2&lt;0 → this start (and every station up to and including 0)
+              can&apos;t work, restart at start=1, tank=0. i=1: diff=-2, tank=-2&lt;0 → start=2.
+              i=2: diff=-2, tank=-2&lt;0 → start=3. i=3: diff=4-1=3, tank=3 (no reset). i=4:
+              diff=5-2=3, tank=6. Loop ends with total=0 (not negative, so a valid start exists) →
+              return start=3. Skipping stations 0,1,2 without individually re-checking them is
+              valid because a negative tank at i proves every station from the current start
+              through i is disqualified together — none of them could have reached i+1 either.
             </div>
           </div>
         </div>

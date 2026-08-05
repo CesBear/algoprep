@@ -13,6 +13,7 @@ export default function HashmapsPage() {
     { name: "Longest Consecutive Sequence",diff:"Medium", tags: ["hash set", "sequence"],      href: "https://leetcode.com/problems/longest-consecutive-sequence/" },
     { name: "Encode & Decode Strings",     diff: "Medium", tags: ["hash map", "premium"],      href: "https://leetcode.com/problems/encode-and-decode-strings/" },
     { name: "LRU Cache",                  diff: "Medium", tags: ["hash map", "doubly LL"],     href: "https://leetcode.com/problems/lru-cache/" },
+    { name: "LFU Cache",                  diff: "Hard",   tags: ["hash map", "design"],        href: "https://leetcode.com/problems/lfu-cache/" },
   ]
 
   const prefixCode = `<span class="cm">// Count subarrays with sum == k  →  O(n)</span>
@@ -73,6 +74,10 @@ export default function HashmapsPage() {
             <code>undefined</code>, and mutating an object after it&apos;s used as a key can
             silently break lookups. That&apos;s why Group Anagrams below sorts each string into
             a stable string key instead of using the array of characters directly.
+            <br /><br />
+            <code>Set</code> preserves insertion order the same way <code>Map</code> does — LFU
+            Cache below uses a <code>Set</code> per frequency bucket so the first key in a bucket
+            is always that bucket&apos;s least-recently-used, without a manual linked list.
           </div>
         </div>
 
